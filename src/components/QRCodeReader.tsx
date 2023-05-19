@@ -12,6 +12,7 @@ const QRCodeReader: React.FC = () => {
     const [mediaDeviceVideos, setMediaDeviceVideos] = useState<MediaDeviceInfo[]>([]);
     const [device, setDevice] = useState<MediaDeviceInfo>();
     const [constrains, setConstraints] = useState({});
+    const [handleChangeCalled, setHandleChangeCalled] = useState(0);
 
     const handleClose = () => setShow(false);
     const handleShow = () => setShow(true);
@@ -23,6 +24,7 @@ const QRCodeReader: React.FC = () => {
         })
         setDevice(filtered[0])
         setConstraints({deviceId: {exact: event.target.value}});
+        setHandleChangeCalled(handleChangeCalled + 1);
     }, []);
 
     function getString(url: string): string {
@@ -85,6 +87,8 @@ const QRCodeReader: React.FC = () => {
                                 <div><p>Nessuna fotocamera rilevata</p></div>
                             )}
                             {device && (<div><p>Dispositivo in uso: {device.label} - {device.deviceId}</p></div>)}
+                            {handleChangeCalled && (<div><p>handleChangeCalled: {handleChangeCalled}</p></div>)}
+                            {constrains && (<div><p>constrains: {JSON.stringify(constrains)}</p></div>)}
                             {mediaDeviceVideos && mediaDeviceVideos.length > 0 && (
                                 <div>
                                     <p>Elenco fotocamere:</p>
