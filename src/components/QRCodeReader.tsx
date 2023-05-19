@@ -80,7 +80,7 @@ const QRCodeReader: React.FC = () => {
                     </div>
                     <div className="mb-4">
 
-                        {(<div className="text-start"><h1> Funzionalità temporanea di log - new</h1>
+                        {(<div className="text-start"><h1> Funzionalità temporanea di log - 11</h1>
                             {isMobile && (<div><p>Dispositivo mobile</p></div>)}
                             {!isMobile && (<div><p>Dispositivo NON mobile</p></div>)}
                             {facingMode && (<div><p>Tipo di fotocamera: {facingMode}</p></div>)}
