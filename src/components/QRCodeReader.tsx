@@ -1,5 +1,5 @@
 "use client"; // This is a client component
-import {useEffect, useState} from "react";
+import React, {ChangeEvent, useCallback, useEffect, useState} from "react";
 import {QrReader} from "react-qr-reader";
 import {isMobile,} from "react-device-detect";
 
@@ -16,14 +16,14 @@ const QRCodeReader: React.FC = () => {
     const handleClose = () => setShow(false);
     const handleShow = () => setShow(true);
 
-    const handleChange = event => {
+
+    const handleChange = useCallback((event: ChangeEvent<HTMLSelectElement>) => {
         let filtered = mediaDeviceVideos.filter(el => {
             return el.deviceId == event.target.value
         })
         setDevice(filtered[0])
         setConstraints({deviceId: {exact: event.target.value}});
-    };
-
+    }, []);
 
     function getString(url: string): string {
         const PATH_TO_MATCH = "stringaPaziente=";
