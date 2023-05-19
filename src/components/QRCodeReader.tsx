@@ -4,16 +4,25 @@ import {QrReader} from "react-qr-reader";
 import {isMobile,} from "react-device-detect";
 
 const QRCodeReader: React.FC = () => {
-    const [selected, setSelected] = useState(isMobile ? "environment" : "user");
+    const [facingMode, setFacingMode] = useState(isMobile ? "environment" : "user");
     const [queryString, setQueryString] = useState("");
-    const [error, setError] = useState("");
+    const [error, setError] = useState<Error>();
     const [show, setShow] = useState(false);
 
     const [mediaDeviceVideos, setMediaDeviceVideos] = useState<MediaDeviceInfo[]>([]);
     const [device, setDevice] = useState<MediaDeviceInfo>();
+    const [constrains, setConstraints] = useState({});
 
     const handleClose = () => setShow(false);
     const handleShow = () => setShow(true);
+
+    const handleChange = event => {
+        let filtered = mediaDeviceVideos.filter(el => {
+            return el.deviceId == event.target.value
+        })
+        setDevice(filtered[0])
+        setConstraints({deviceId: {exact: event.target.value}});
+    };
 
 
     function getString(url: string): string {
@@ -36,15 +45,17 @@ const QRCodeReader: React.FC = () => {
                     return el.kind == "videoinput"
                 })
                 if (mediaDeviceVideos.length > 0) {
-
+                    setConstraints({facingMode: {ideal: facingMode}})
                     setMediaDeviceVideos(mediaDeviceVideos);
                     console.log("mediaDeviceVideos", mediaDeviceVideos)
                     //c'è una sola telecamera
                     if (mediaDeviceVideos.length == 1) {
                         setDevice(mediaDeviceVideos[0]);
+
                     }
                     //ci sono più videocamere
-                    if (mediaStream.length > 1) {
+                    if (mediaDeviceVideos.length > 1) {
+
                         setDevice(mediaDeviceVideos[0]);
                     }
                     console.log("device", device)
@@ -75,14 +86,14 @@ const QRCodeReader: React.FC = () => {
                                 <h5>Inquadrare il codice QR</h5>
                             </div>
                         )}
-                        {error && <div>{error} </div>}
+                        {error && <div>Errore rilevato: {error.name} - {error.message} </div>}
                     </div>
                     <div className="mb-4">
 
                         {(<div className="text-start"><h1> Funzionalità temporanea di log - new</h1>
                             {isMobile && (<div><p>Dispositivo mobile</p></div>)}
                             {!isMobile && (<div><p>Dispositivo NON mobile</p></div>)}
-                            {selected && (<div><p>Tipo di fotocamera: {selected}</p></div>)}
+                            {facingMode && (<div><p>Tipo di fotocamera: {facingMode}</p></div>)}
                             {mediaDeviceVideos && mediaDeviceVideos.length <= 0 && (
                                 <div><p>Nessuna fotocamera rilevata</p></div>
                             )}
@@ -90,24 +101,25 @@ const QRCodeReader: React.FC = () => {
                             {mediaDeviceVideos && mediaDeviceVideos.length > 0 && (
                                 <div>
                                     <p>Elenco fotocamere:</p>
-                                    <ul>
+                                    <select className="form-select" aria-label="Default select example"
+                                            onChange={handleChange}>
+
                                         {mediaDeviceVideos.map(mediaDeviceVideo => {
-                                            return <li
-                                                key={mediaDeviceVideo.deviceId}>label:{mediaDeviceVideo.label} -
-                                                daviceId:{mediaDeviceVideo.deviceId}</li>
+                                            return <option value={mediaDeviceVideo.deviceId}
+                                                           key={mediaDeviceVideo.deviceId}>label:{mediaDeviceVideo.label} </option>
                                         })}
-                                    </ul>
+                                    </select>
                                 </div>
                             )}
                         </div>)}
-                        {device && device?.deviceId && <QrReader
+                        {((device && device?.deviceId) || constrains) && <QrReader
                             onResult={(result, error) => {
                                 if (!!result) {
                                     setQueryString(getString(result?.getText()));
                                 }
 
                                 if (!!error) {
-                                    setError(error.message);
+                                    setError(error);
                                 }
                             }}
                             containerStyle={{
@@ -123,7 +135,7 @@ const QRCodeReader: React.FC = () => {
                                 border: "2px solid red"
                             }}
                             /*constraints={{deviceId: {exact: device.deviceId}}}*/
-                            constraints={{facingMode: {exact: selected}}}
+                            constraints={constrains}
                         />}
                     </div>
                     {queryString && (
