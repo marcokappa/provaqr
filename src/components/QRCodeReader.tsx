@@ -47,7 +47,7 @@ const QRCodeReader: React.FC = () => {
                     return el.kind == "videoinput"
                 })
                 if (mediaDeviceVideos.length > 0) {
-                    setConstraints({facingMode: {exact: facingMode}})
+                    setConstraints({facingMode: {exact: {facingMode}}})
                     setMediaDeviceVideos(mediaDeviceVideos);
                 } else {
                     setMediaDeviceVideos([]);
