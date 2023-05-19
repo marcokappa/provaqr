@@ -3,8 +3,6 @@ import {useEffect, useState} from "react";
 import {QrReader} from "react-qr-reader";
 import {isMobile,} from "react-device-detect";
 
-import Image from "next/image";
-
 const QRCodeReader: React.FC = () => {
     const [selected, setSelected] = useState(isMobile ? "environment" : "user");
     const [queryString, setQueryString] = useState("");
@@ -30,7 +28,7 @@ const QRCodeReader: React.FC = () => {
         return ret;
     }
 
-    useEffect(() => {
+    const loadCamera = () => {
         navigator.mediaDevices.enumerateDevices().then(
             (mediaStream) => {
 
@@ -40,7 +38,7 @@ const QRCodeReader: React.FC = () => {
                 if (mediaDeviceVideos.length > 0) {
 
                     setMediaDeviceVideos(mediaDeviceVideos);
-                    console.log("mediaDeviceVideos",mediaDeviceVideos)
+                    console.log("mediaDeviceVideos", mediaDeviceVideos)
                     //c'è una sola telecamera
                     if (mediaDeviceVideos.length == 1) {
                         setDevice(mediaDeviceVideos[0]);
@@ -49,7 +47,7 @@ const QRCodeReader: React.FC = () => {
                     if (mediaStream.length > 1) {
                         setDevice(mediaDeviceVideos[0]);
                     }
-                    console.log("device",device)
+                    console.log("device", device)
 
                 } else {
                     setMediaDeviceVideos([]);
@@ -58,7 +56,13 @@ const QRCodeReader: React.FC = () => {
         ).catch((error) => {
             throw "impossibile accedere alla fotocamera";
         })
+    }
+
+
+    useEffect(() => {
+        loadCamera();
     }, [])
+
 
     return (
         <>
@@ -96,7 +100,7 @@ const QRCodeReader: React.FC = () => {
                                 </div>
                             )}
                         </div>)}
-                        {device && <QrReader
+                        {device && device?.deviceId && <QrReader
                             onResult={(result, error) => {
                                 if (!!result) {
                                     setQueryString(getString(result?.getText()));
