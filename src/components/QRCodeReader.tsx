@@ -45,21 +45,8 @@ const QRCodeReader: React.FC = () => {
                     return el.kind == "videoinput"
                 })
                 if (mediaDeviceVideos.length > 0) {
-                    setConstraints({facingMode: {ideal: facingMode}})
+                    setConstraints({facingMode: {exact: facingMode}})
                     setMediaDeviceVideos(mediaDeviceVideos);
-                    console.log("mediaDeviceVideos", mediaDeviceVideos)
-                    //c'è una sola telecamera
-                    if (mediaDeviceVideos.length == 1) {
-                        setDevice(mediaDeviceVideos[0]);
-
-                    }
-                    //ci sono più videocamere
-                    if (mediaDeviceVideos.length > 1) {
-
-                        setDevice(mediaDeviceVideos[0]);
-                    }
-                    console.log("device", device)
-
                 } else {
                     setMediaDeviceVideos([]);
                 }
@@ -86,7 +73,7 @@ const QRCodeReader: React.FC = () => {
                                 <h5>Inquadrare il codice QR</h5>
                             </div>
                         )}
-                        {error && <div>Errore rilevato: {error.name} - {error.message} </div>}
+                        {(error?.message) && <div>Errore rilevato: {error.name} - {error.message} </div>}
                     </div>
                     <div className="mb-4">
 
